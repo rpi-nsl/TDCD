@@ -337,7 +337,7 @@ if __name__ == "__main__":
     START_EPOCH = 0
     
     # ./results/
-    PATH = (f"/gpfs/u/home/VFLA/VFLAcstg/scratch/Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
+    PATH = (f"Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
     if os.path.exists(PATH):
         print(
             """
@@ -583,8 +583,7 @@ if __name__ == "__main__":
         """
         Save Report and checkpoint
         """
-        # /gpfs/u/home/VFLA/VFLAdsnr/scratch/MLLSGD
-        PATH = (f"/gpfs/u/home/VFLA/VFLAcstg/scratch/Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
+        PATH = (f"Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
         torch.save({
             'epoch': t,
             'hub_average_network_state_dict' : [i.average_network.state_dict() for i in dc_list],
