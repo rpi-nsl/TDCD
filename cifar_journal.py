@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jan 29 11:42:22 2021
 
-@author: Anirban Das
+@author: Anirban Das, Timothy Castiglia
 Note:
     To save time, evaluate every 10 iterations
 """
@@ -148,7 +147,7 @@ def parse_args():
     Parse command line arguments
     """
     import argparse
-    parser = argparse.ArgumentParser(description='Tiered BCD CIFAR')
+    parser = argparse.ArgumentParser(description='TDCD CIFAR')
     # parser.add_argument('--data', type=int, nargs='?', default=0,
     #                         help='dataset to use in training.')
     # parser.add_argument('--model', type=int, nargs='?', default=0,
@@ -200,12 +199,9 @@ if __name__ == "__main__":
     cifar_10_dir = "./data/cifar10"#'cifar-10-batches-py'
     X_train, train_filenames, y_train, X_test, test_filenames, y_test, label_names = load_cifar_10_data(cifar_10_dir)
 
-    #mm_scaler = MinMaxScaler()
-    #X_train = mm_scaler.fit_transform(X_train)
     X_train = torch.FloatTensor(X_train)/255.0 #scale all images by 255
     X_train = X_train.permute(0,3, 1,2) # to make it 50000, 3, 32, 32
     
-    #X_test = mm_scaler.transform(X_test)
     X_test = torch.FloatTensor(X_test)/255.0 #scale all images by 255
     X_test = X_test.permute(0, 3, 1, 2)# to make it 10000, 3, 32, 32
     
@@ -336,8 +332,7 @@ if __name__ == "__main__":
               }
     START_EPOCH = 0
     
-    # ./results/
-    PATH = (f"Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
+    PATH = (f"Checkpoint_Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
     if os.path.exists(PATH):
         print(
             """
@@ -353,9 +348,9 @@ if __name__ == "__main__":
                 device.reset_optimizer()
 
         if not args.stepLR:
-            filename =f"Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
+            filename =f"Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
         else:
-            filename =f"Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr[{alpha},0.005,0.001]_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
+            filename =f"Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr[{alpha},0.005,0.001]_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
         
         f = open(os.path.join(args.resultfolder, filename), "rb")
         report = pickle.load(f)
@@ -558,43 +553,20 @@ if __name__ == "__main__":
 
             
 
-        # """
-        # DCS exchange the top layer information between eachother without averaging, but concatenating, 
-        # This allows us to maintain a Oracle like overall top layer network
-        # """
-        # # This is the MPI reduce part between the DCs
-        # overall_top_layer_weight = torch.cat((dc_list[0].top_layer_network.classifier.weight.data[:, :256], 
-        #                                       dc_list[1].top_layer_network.classifier.weight.data[:, 256:]), dim=1)
-        # # overall_top_layer_bias = (dc_list[0].top_layer_network.classifier.bias.data + 
-        # #                           dc_list[1].top_layer_network.classifier.bias.data)/2
-        # with torch.no_grad():
-        #     dc_list[0].top_layer_network.classifier.weight = nn.Parameter(overall_top_layer_weight)
-        #     # dc_list[0].top_layer_network.classifier.bias = nn.Parameter(overall_top_layer_bias)
-        #     dc_list[1].top_layer_network.classifier.weight = nn.Parameter(overall_top_layer_weight)
-        #     # dc_list[1].top_layer_network.classifier.bias = nn.Parameter(overall_top_layer_bias)
-
-        # # Get train loss
-        # get_train_or_test_loss_simplified_cifar(dc_list[0].average_network, dc_list[1].average_network, 
-        #                        dc_list[0].top_layer_network, 
-        #                        over_train_loader, over_test_loader, report, cord_div_idx=16) # i.e.divide each image at 14th column
-        # #ax1.scatter(t, report["train_loss"][-1], color="blue")
-        # #ax2.scatter(t, report["test_accuracy"][-1], color="blue")
-        # #plt.pause(0.05)
         """
         Save Report and checkpoint
         """
-        PATH = (f"Checkpoint_Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
+        PATH = (f"Checkpoint_Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pt")
         torch.save({
             'epoch': t,
             'hub_average_network_state_dict' : [i.average_network.state_dict() for i in dc_list],
         }, PATH)
         # =============================================================================
         os.makedirs(f"{args.resultfolder}", exist_ok=True)
-        #filename =f"EveryepochMANUAL_minibatching_CIFAR_report_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pkl" 
         if not args.stepLR:
-            filename =f"Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
+            filename =f"Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
         else:
-            filename =f"Simplified_SMALLER_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr[{alpha},0.005,0.001]_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
+            filename =f"Simplified_Cifar_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr[{alpha},0.005,0.001]_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}.pkl" 
         f = open(os.path.join(args.resultfolder, filename), "wb")
         pickle.dump(report, f)
         # =============================================================================

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar 24 16:42:22 2022
-
+@author: Anirban Das, Timothy Castiglia
 Note:
     To save time, evaluate every 10 iterations
 """
@@ -148,7 +147,7 @@ def parse_args():
     Parse command line arguments
     """
     import argparse
-    parser = argparse.ArgumentParser(description='Tiered BCD ModelNet')
+    parser = argparse.ArgumentParser(description='TDCD ModelNet')
     # parser.add_argument('--data', type=int, nargs='?', default=0,
     #                         help='dataset to use in training.')
     # parser.add_argument('--model', type=int, nargs='?', default=0,
@@ -208,15 +207,6 @@ if __name__ == "__main__":
     X_train = torch.FloatTensor(torch.stack(X_train))
     X_test = torch.FloatTensor(torch.stack(X_test))
 
-    #mm_scaler = MinMaxScaler()
-    #X_train = mm_scaler.fit_transform(X_train)
-    #X_train = torch.FloatTensor(X_train)/255.0 #scale all images by 255
-    #X_train = X_train.permute(0,3, 1,2) # to make it 50000, 3, 32, 32
-    
-    #X_test = mm_scaler.transform(X_test)
-    #X_test = torch.FloatTensor(X_test)/255.0 #scale all images by 255
-    #X_test = X_test.permute(0, 3, 1, 2)# to make it 10000, 3, 32, 32
-    
     """
     We need to standardize the tensor dataset
     We normalize by : image = (image - mean) / std
@@ -225,14 +215,6 @@ if __name__ == "__main__":
     https://github.com/kuangliu/pytorch-modelnet/issues/16
     https://stackoverflow.com/questions/50710493/modelnet-10-meaningless-normalization-values
     """
-    #X_train, means, stds = normalize(X_train)
-    #means = torch.tensor([0.4914, 0.4822, 0.4465])
-    #stds = torch.tensor([0.247, 0.243, 0.261])
-    #X_train.sub_(means[None, :, None, None]).div_(stds[ None, :, None, None])
-    #X_test.sub_(means[None, :, None, None]).div_(stds[ None, :, None, None])
-
-    # X_train, _, _ = normalize(X_train, means, stds)
-    # X_test, _, _ = normalize(X_test, means, stds)
     
     y_train = torch.FloatTensor(y_train)
     y_test = torch.FloatTensor(y_test)
@@ -594,7 +576,6 @@ if __name__ == "__main__":
         }, PATH)
         # =============================================================================
         os.makedirs(f"{args.resultfolder}", exist_ok=True)
-        #filename =f"EveryepochMANUAL_minibatching_ModelNet_report_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}.pkl" 
         if not args.stepLR:
             filename =f"Modelnet_model_BS{local_batch_size}_N{N}_K{K}_Q{local_epoch}_lr{alpha}_momentum{momentum}_seed{args.seed}_sampling{args.withreplacement}_eval{args.evaluateateveryiteration}_evalafter{args.evalafter}_modelnet{args.modelnet_type}.pkl" 
         else:
